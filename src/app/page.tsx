@@ -1,69 +1,138 @@
-import Image from "next/image";
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { FunnelChart } from "@/components/dashboard/funnel-chart";
+import { HotLeads } from "@/components/dashboard/hot-leads";
+import { KpiGrid } from "@/components/dashboard/kpi-grid";
+import { LiveRefresh } from "@/components/dashboard/live-refresh";
+import { RevenueAtRisk } from "@/components/dashboard/revenue-at-risk";
+import { SpeedToLead } from "@/components/dashboard/speed-to-lead";
+import { GlassCard } from "@/components/shell/glass-card";
+import { PageHeader } from "@/components/shell/page-header";
+import { getDashboardData } from "@/lib/dashboard-data";
 
-export default function Home() {
+// Shown instantly while the live data loads
+function DashboardSkeleton() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <PageHeader
+        title="Command Center"
+        description="Your entire sales operation at a glance, live."
+      />
+      <div className="space-y-6" aria-busy="true">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <GlassCard key={i} className="h-32 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <GlassCard className="h-72 animate-pulse lg:col-span-2" />
+          <GlassCard className="h-72 animate-pulse" />
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Reads fresh data on every request. It streams in behind the Suspense boundary below.
+async function Dashboard() {
+  await connection(); // opt in to request-time rendering (database reads)
+
+  let data: Awaited<ReturnType<typeof getDashboardData>> | null = null;
+  let loadError: string | null = null;
+
+  try {
+    data = await getDashboardData();
+  } catch (err) {
+    loadError = err instanceof Error ? err.message : String(err);
+    console.error("[dashboard] failed to load:", loadError);
+  }
+
+  if (!data) {
+    return (
+      <>
+        <PageHeader title="Command Center" description="Your sales operation at a glance." />
+        <GlassCard className="p-6" role="alert">
+          <h2 className="font-serif text-xl">Could not load live data</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Check your .env.local keys, make sure the SQL schema is created, and run{" "}
+            <code>npm run seed</code>.
           </p>
+          {process.env.NODE_ENV !== "production" && loadError && (
+            <p className="mt-3 rounded-xl bg-danger/10 px-3 py-2 text-xs text-danger">
+              {loadError}
+            </p>
+          )}
+        </GlassCard>
+      </>
+    );
+  }
+
+  const { stats, risk } = data;
+
+  return (
+    <>
+      <LiveRefresh />
+      <PageHeader
+        title="Command Center"
+        description="Your entire sales operation at a glance, live."
+        actions={
+          <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted-foreground">
+            <span className="size-1.5 rounded-full bg-success" aria-hidden />
+            Live data
+          </span>
+        }
+      />
+
+      {!data.hasData || !data.latestLead ? (
+        <GlassCard className="p-8 text-center">
+          <h2 className="font-serif text-xl">No leads yet</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+            Run <code>npm run seed</code> to load demo data, or open the Inbox and press + to
+            simulate your first lead.
+          </p>
+        </GlassCard>
+      ) : (
+        <div className="space-y-6">
+          <KpiGrid
+            leadsToday={stats.leadsToday}
+            autoHandledPct={stats.autoHandledPct}
+            avgResponseSeconds={stats.avgResponseSeconds}
+            teamAvgSeconds={stats.teamAvgSeconds}
+            pipelineCr={stats.pipelineCr}
+            visitsThisWeek={stats.visitsThisWeek}
+            revenueAtRiskCr={risk.total / 10_000_000}
+            atRiskCount={risk.count}
+          />
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <SpeedToLead
+                aiSeconds={stats.avgResponseSeconds}
+                teamSeconds={stats.teamAvgSeconds}
+                latestLead={data.latestLead}
+              />
+            </div>
+            <RevenueAtRisk totalInr={risk.total} count={risk.count} leads={risk.leads} />
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2">
+              <FunnelChart stages={data.funnel} />
+              <HotLeads leads={data.hotLeads} />
+            </div>
+            <ActivityFeed events={data.activity} />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+    </>
+  );
+}
+
+export default function CommandCenterPage() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <Dashboard />
+    </Suspense>
   );
 }
