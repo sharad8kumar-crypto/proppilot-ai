@@ -151,29 +151,37 @@ export function NotificationBell() {
     };
   }, []);
 
-  // New alerts arrive live
+    // New alerts arrive live (optional: if Supabase is not configured, the bell just stays quiet)
   useEffect(() => {
-    const db = getSupabaseBrowser();
+    let cleanup: (() => void) | undefined;
 
-    const channel = db
-      .channel("notifications-bell")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "activity_events" },
-        (payload) => {
-          const notice = toNotice(payload.new as EventRow);
-          if (!notice) return;
-          setNotices((prev) =>
-            prev.some((n) => n.id === notice.id) ? prev : [notice, ...prev].slice(0, MAX_ITEMS)
-          );
-          setFreshIds((prev) => new Set(prev).add(notice.id));
-        }
-      )
-      .subscribe();
+    try {
+      const db = getSupabaseBrowser();
 
-    return () => {
-      void db.removeChannel(channel);
-    };
+      const channel = db
+        .channel("notifications-bell")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "activity_events" },
+          (payload) => {
+            const notice = toNotice(payload.new as EventRow);
+            if (!notice) return;
+            setNotices((prev) =>
+              prev.some((n) => n.id === notice.id) ? prev : [notice, ...prev].slice(0, MAX_ITEMS)
+            );
+            setFreshIds((prev) => new Set(prev).add(notice.id));
+          }
+        )
+        .subscribe();
+
+      cleanup = () => {
+        void db.removeChannel(channel);
+      };
+    } catch {
+      // Realtime is a bonus feature, so a missing key must never crash the whole app
+    }
+
+    return () => cleanup?.();
   }, []);
 
   // Close on outside click or Escape (and mark everything as read)
