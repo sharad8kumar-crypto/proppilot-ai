@@ -139,11 +139,11 @@ const BUDGET_BAND: Record<number, [number, number]> = {
 };
 
 const TIMELINE_TEXT: Record<Timeline, string> = {
-  immediate: "Jaldi se jaldi, isi mahine",
-  "1-3 months": "2-3 mahine mein",
-  "3-6 months": "4-5 mahine mein",
-  "6+ months": "Saal bhar mein",
-  unknown: "Abhi decide nahi kiya",
+  immediate: "As soon as possible, this month",
+  "1-3 months": "In 2 to 3 months",
+  "3-6 months": "In 4 to 5 months",
+  "6+ months": "Within a year",
+  unknown: "I have not decided yet",
 };
 
 type SeedLead = {
@@ -337,13 +337,13 @@ export async function seedDatabase(db: SupabaseClient): Promise<SeedSummary> {
   const messages: object[] = [];
   for (const l of sampleLeads) {
     const first = l.name.split(" ")[0];
-    const script: { sender: "lead" | "ai"; content: string; afterMs: number }[] = [
-      { sender: "lead", content: `Hi, ${l.bhk}BHK ke baare mein jaankari chahiye, ${l.locality} mein.`, afterMs: 0 },
-      { sender: "ai", content: `Namaste ${first}! Main PropPilot assistant hoon. ${l.locality} mein ${l.bhk}BHK ke liye main aapki madad karunga. Aapka budget kitna hai?`, afterMs: l.firstResponseMs },
+      const script: { sender: "lead" | "ai"; content: string; afterMs: number }[] = [
+      { sender: "lead", content: `Hi, I would like to know more about a ${l.bhk} BHK in ${l.locality}.`, afterMs: 0 },
+      { sender: "ai", content: `Hello ${first}! I am the PropPilot assistant. I can help you find a ${l.bhk} BHK in ${l.locality}. What is your budget?`, afterMs: l.firstResponseMs },
       { sender: "lead", content: `Around ${formatBudget(l.budgetMax)}`, afterMs: l.firstResponseMs + 4 * 60_000 },
-      { sender: "ai", content: "Bahut badhiya! Aap kab tak shift hona chahenge?", afterMs: l.firstResponseMs + 4 * 60_000 + 6000 },
+      { sender: "ai", content: "That works well. When are you planning to move?", afterMs: l.firstResponseMs + 4 * 60_000 + 6000 },
       { sender: "lead", content: TIMELINE_TEXT[l.timeline], afterMs: l.firstResponseMs + 9 * 60_000 },
-      { sender: "ai", content: "Samajh gaya. Kya aap home loan lene ka plan kar rahe hain?", afterMs: l.firstResponseMs + 9 * 60_000 + 6000 },
+      { sender: "ai", content: "Got it. Are you planning to take a home loan?", afterMs: l.firstResponseMs + 9 * 60_000 + 6000 },
     ];
     for (const m of script) {
       messages.push({

@@ -22,7 +22,7 @@ function buildPrompt(input: FollowupInput): string {
   return `You are PropPilot, a warm and professional real-estate sales assistant for an Indian builder.
 
 Write ONE short follow-up chat message to a buyer who has gone quiet. Plain text only: no markdown, no bullet points, no emojis. Maximum 2 sentences.
-Write in the SAME language style as the BUYER MESSAGES below (Hinglish in Roman script, Hindi, or English).
+Write in clear, simple English.
 ${input.firstName ? `Greet the buyer by first name: ${input.firstName}.` : "Do not guess the buyer's name."}
 
 GOAL
@@ -34,7 +34,7 @@ ${input.profileText}
 PROPERTY FACTS (copy names exactly; property cards with all details are shown below your message)
 ${facts}
 
-BUYER MESSAGES (for language style only)
+BUYER MESSAGES (for context only)
 ${samples}
 
 RULES

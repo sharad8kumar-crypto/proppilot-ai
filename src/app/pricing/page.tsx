@@ -19,7 +19,7 @@ const TIERS: Tier[] = [
     tagline: "Never miss a lead again",
     features: [
       "Lead capture from every source",
-      "AI replies and qualification in Hinglish, Hindi and English",
+      "AI replies and lead qualification in English",
       "Live dashboard with response-time tracking",
       "Instant in-app alerts for Hot leads",
     ],

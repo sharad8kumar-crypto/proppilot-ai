@@ -12,7 +12,7 @@ automatically and shows the owner exactly where the money is.
 
 ## What it does
 
-- **AI first response** in seconds, in the buyer's language (Hinglish, Hindi or English), asking one
+- **AI first response** in seconds, in the buyer's language in clear English, asking one
   question at a time and never inventing prices.
 - **Explainable lead scoring** out of 100 (rules in code, not AI) with a Hot, Warm and Cold split.
 - **Property matching and EMI** from the database. The AI never does the math.

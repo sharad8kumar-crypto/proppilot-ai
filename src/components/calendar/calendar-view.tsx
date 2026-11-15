@@ -191,7 +191,7 @@ export function CalendarView({ visits, agents, todayKey }: CalendarViewProps) {
       {weekVisits.length === 0 && (
         <p className="text-center text-sm text-muted-foreground">
           No visits this week. Ask for a visit in the Inbox chat (for example
-          &quot;Kal 11 baje visit karna hai&quot;) and it will appear here live.
+          &quot;Book me a visit tomorrow at 11 AM&quot;) and it will appear here live.
         </p>
       )}
 

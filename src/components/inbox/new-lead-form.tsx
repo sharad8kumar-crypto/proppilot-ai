@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,10 +16,10 @@ const SOURCES: { value: LeadSource; label: string }[] = [
 
 // Quick starters for the demo (from the brief's scenario list)
 const PRESETS = [
-  { label: "Serious buyer", text: "Hi, mujhe Noida Extension mein 2BHK flat chahiye, 3 mahine ke andar lena hai." },
-  { label: "Investor", text: "Hello, looking for an investment property in Greater Noida West with good rental yield." },
-  { label: "Budget shopper", text: "Sasta 1BHK batao Ghaziabad mein, kitne ka milega?" },
-  { label: "Urgent relocation", text: "Mera transfer Gurgaon ho gaya hai, jaldi se jaldi 3BHK chahiye Sohna Road pe." },
+  { label: "Serious buyer", text: "Hi, I need a 2 BHK flat in Noida Extension and I want to buy within 3 months." },
+  { label: "Investor", text: "Hello, I am looking for an investment property in Greater Noida West with good rental yield." },
+  { label: "Budget shopper", text: "Please show me an affordable 1 BHK in Ghaziabad. How much does it cost?" },
+  { label: "Urgent relocation", text: "I have been transferred to Gurgaon and need a 3 BHK on Sohna Road as soon as possible." },
 ];
 
 type NewLeadFormProps = {
@@ -50,9 +51,8 @@ export function NewLeadForm({ onSubmit, onCancel }: NewLeadFormProps) {
     <div className="min-h-0 flex-1 overflow-y-auto p-6">
       <h2 className="font-serif text-2xl">New demo lead</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Simulate a buyer's first message. The AI replies in seconds and the lead appears in your
-        list.
-      </p>
+       Simulate a buyer&apos;s first message. The AI replies in seconds and the lead appears in your list.
+       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 max-w-lg space-y-5">
         <div>
@@ -103,7 +103,7 @@ export function NewLeadForm({ onSubmit, onCancel }: NewLeadFormProps) {
             value={message}
             onChange={(e) => setMessage(e.target.value.slice(0, 500))}
             rows={4}
-            placeholder="Hi, mujhe 2BHK chahiye..."
+            placeholder="Hi, I am looking for a 2 BHK..."
             className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none placeholder:text-faint focus-visible:border-primary"
           />
         </div>

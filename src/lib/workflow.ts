@@ -49,7 +49,7 @@ export const KIND_LABEL: Record<NodeKind, string> = {
 export const KIND_DESCRIPTION: Record<NodeKind, string> = {
   trigger: "Starts the workflow whenever a new lead arrives from a portal, an ad, WhatsApp or the website.",
   manual: "Starts the workflow when you press Run.",
-  ai: "Chats with the buyer, understands Hinglish and extracts budget, BHK, area, timeline and loan need.",
+  ai: "Chats with the buyer in English and extracts budget, BHK, area, timeline and loan need.",
   score: "Scores the lead out of 100 with fixed rules in code, so every point can be explained.",
   branch: "Routes the lead to the Hot, Warm or Cold path using its score.",
   alert: "Tells your team about a Hot lead through the notification bell and the activity feed.",
@@ -173,7 +173,7 @@ export function settingsFor(kind: NodeKind): SettingRow[] {
       return [
         { label: "Provider", value: "Groq (model set by GROQ_MODEL)" },
         { label: "Output", value: "Strict JSON, one question at a time" },
-        { label: "Language", value: "Matches the buyer: Hinglish, Hindi or English" },
+        { label: "Language", value: "Clear, simple English" },
         { label: "Reasoning effort", value: "Low, for fast replies" },
       ];
     case "score":
@@ -240,9 +240,9 @@ export const SCENARIOS: Record<
     leadName: "Test Lead (Hot)",
     source: "99acres",
     messages: [
-      "Hi, mujhe Noida Extension mein 2BHK chahiye, budget 80 lakh hai aur 2 mahine mein lena hai",
-      "Haan home loan lunga, self use ke liye hai",
-      "Kal 11 baje visit karna hai",
+      "Hi, I need a 2 BHK in Noida Extension. My budget is 80 lakh and I want to buy within 2 months.",
+      "Yes, I will take a home loan. It is for my own use.",
+      "I would like to visit tomorrow at 11 AM.",
     ],
   },
   warm: {
@@ -250,14 +250,14 @@ export const SCENARIOS: Record<
     leadName: "Test Lead (Warm)",
     source: "facebook",
     messages: [
-      "Hi, mujhe Greater Noida West mein 2BHK chahiye, budget 70 lakh ke aas paas hai",
-      "4-5 mahine mein lena hai, abhi options dekh raha hoon",
+      "Hi, I am looking for a 2 BHK in Greater Noida West. My budget is around 70 lakh.",
+      "I want to buy in 4 to 5 months. I am still comparing options.",
     ],
   },
   cold: {
     label: "Cold lead",
     leadName: "Test Lead (Cold)",
     source: "website",
-    messages: ["Hi, bas dekh raha hoon, abhi kuch decide nahi kiya"],
+    messages: ["Hi, I am just browsing. I have not decided anything yet."],
   },
 };

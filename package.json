@@ -2,13 +2,15 @@
   "name": "proppilot-ai",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "seed": "tsx scripts/seed.ts",
-    "check:groq": "tsx scripts/check-groq.ts"
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "eslint",
+  "seed": "tsx scripts/seed.ts",
+  "check:groq": "tsx scripts/check-groq.ts",
+  "qa": "tsx scripts/qa.ts",
+  "qa:api": "tsx scripts/qa-api.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

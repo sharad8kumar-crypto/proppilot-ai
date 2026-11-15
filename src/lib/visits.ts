@@ -130,7 +130,7 @@ function snapToSlot(hour: number): number | null {
       bestDiff = diff;
     }
   }
-  return bestDiff <= 1 ? best : null;
+   return bestDiff <= 0.5 ? best : null;
 }
 
 const PART_OF_DAY: [RegExp, number][] = [
@@ -169,19 +169,33 @@ export function parseTime(text: string): { present: boolean; hour: number | null
   return { present: false, hour: null };
 }
 
+const NEGATIVE = /\b(no|not|nahi|nahin|na|cancel|later|baad|dont|don't)\b/;
+
+function wordCount(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+// "doosra wala", "option 3", "2", "the last one". Only short messages count, and a number only
+// counts when it stands alone, so "2 bhk please" is never read as "slot number 2".
 function parseOrdinal(text: string): number | "last" | null {
   const t = text.trim();
-  if (/\b(pehla|pehle|pahla|pahle|first|1st)\b/.test(t) || /^(?:option|number|no\.?)?\s*1\b/.test(t)) return 0;
-  if (/\b(doosra|dusra|dusri|doosri|second|2nd)\b/.test(t) || /^(?:option|number|no\.?)?\s*2\b/.test(t)) return 1;
-  if (/\b(teesra|tisra|teesri|third|3rd)\b/.test(t) || /^(?:option|number|no\.?)?\s*3\b/.test(t)) return 2;
+  if (wordCount(t) > 4 || NEGATIVE.test(t)) return null;
+
+  const numeric = t.match(/^(?:(?:option|number|no\.?|slot)\s*)?([123])[.!?]*$/);
+  if (numeric) return Number(numeric[1]) - 1;
+
+  if (/\b(pehla|pehle|pahla|pahle|first|1st)\b/.test(t)) return 0;
+  if (/\b(doosra|dusra|dusri|doosri|second|2nd)\b/.test(t)) return 1;
+  if (/\b(teesra|tisra|teesri|third|3rd)\b/.test(t)) return 2;
   if (/\b(last|aakhri|akhri)\b/.test(t)) return "last";
   return null;
 }
 
+// "haan", "ok", "theek hai". Only short messages count, and negatives never do,
+// so "ok but what is the price?" or "not ok" are never read as a yes.
 function isAffirmation(text: string): boolean {
-  return /\b(haan|haanji|han|ha|yes|yep|ok|okay|theek|thik|sahi|done|confirm|confirmed|chalega|chalegi|book)\b/.test(
-    text
-  );
+  if (wordCount(text) > 4 || NEGATIVE.test(text)) return false;
+  return /\b(haan|haanji|han|ha|yes|yep|ok|okay|theek|thik|sahi|done|confirm|confirmed|chalega|chalegi|book)\b/.test(text);
 }
 
 // Decides which slot the buyer chose.

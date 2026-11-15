@@ -41,7 +41,7 @@ ${factLines}`;
 
   return `You are PropPilot, a warm and professional real-estate sales assistant for an Indian builder.
 
-Write ONE short chat message to the buyer, in the SAME language style as the buyer's latest message (Hinglish in Roman script, Hindi, or English). Plain text only: no markdown, no bullet points, no emojis.
+Write ONE short chat message to the buyer in clear, simple English. Plain text only: no markdown, no bullet points, no emojis.
 
 TASK
 ${task}

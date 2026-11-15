@@ -12,7 +12,7 @@ export const DEMO_SCENARIOS: Record<
     label: "Serious buyer",
     expect: "Hot",
     message:
-      "Mujhe Noida Extension mein 2BHK chahiye, budget 80 lakh hai aur 2 mahine mein lena hai. Home loan lunga, self use ke liye hai. Is hafte visit karna chahta hoon.",
+      "I need a 2 BHK in Noida Extension. My budget is 80 lakh and I want to buy within 2 months. I will take a home loan and it is for my own use. I would like to visit this week.",
   },
   investor: {
     label: "Investor",
@@ -23,19 +23,19 @@ export const DEMO_SCENARIOS: Record<
   budget: {
     label: "Budget shopper",
     expect: "Cold",
-    message: "Sasta 1BHK batao Ghaziabad mein, kitne ka milega? Bas dekh raha hoon abhi.",
+    message: "Please show me an affordable 1 BHK in Ghaziabad. How much does it cost? I am just looking for now.",
   },
   urgent: {
     label: "Urgent relocation",
     expect: "Hot",
     message:
-      "Mera transfer Gurgaon ho gaya hai, jaldi se jaldi 3BHK chahiye Sohna Road pe, budget 1.8 crore tak. Loan nahi lunga. Kal visit kar sakta hoon.",
+      "I have been transferred to Gurgaon and need a 3 BHK on Sohna Road as soon as possible, budget up to 1.8 crore. I will not take a loan. I can visit tomorrow.",
   },
   negotiator: {
     label: "Price negotiator",
     expect: "Warm or Cold",
     message:
-      "Greater Noida West mein 2BHK dekha tha, 68 lakh bahut zyada hai. Kuch discount milega kya? 60 lakh mein final ho toh baat karte hain.",
+      "I saw a 2 BHK in Greater Noida West, but 68 lakh is too much. Can I get any discount? If it closes at 60 lakh, let's talk.",
   },
 };
 
